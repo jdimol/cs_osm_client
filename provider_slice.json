@@ -1,0 +1,20 @@
+{
+	"netslice-subnet": 
+		{
+		"id":"tensorflow_big", 
+		"is-shared-nss": true,
+		"description": "NetSlice Subnet For Tensorflow",
+		"nsd-ref": "tensorflow_big_nsd"
+		},
+	"mgmt-connector":
+			 {	
+				"nss-ref": "tensorflow_big",
+				"nsd-connection-point-ref": "nsd_cp_mgmt"
+			 },
+	"data-connector":
+			 {
+				"nss-ref": "tensorflow_big",
+				"nsd-connection-point-ref": "nsd_cp_data"
+			 }
+		
+}
