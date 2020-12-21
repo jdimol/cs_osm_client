@@ -136,3 +136,35 @@ payload = yaml_cnst
 response = requests.request("PUT", url, headers=headers, data=payload, verify=False)
 print(response.text)
 
+print("Instantiating NSI... \n")
+
+# Instantiate Consumer's slice
+
+# Headers - URL
+url = base_url + "/nsilcm/v1/netslice_instances_content"
+headers["Content-Type"] = "application/json"
+
+# Mandatory Instantiation parameters
+
+''' TODO Read the below variables as input '''
+''' 1) nsi_name: user's input
+    2) nst_id: it is defined above
+    3) vim_account_id: translated from vim_name into id
+'''
+
+nsi_name = "test_consumer_slice"    # str()
+nst_id = str(_id)
+vim_account_id = "6dc88ac7-1790-4fce-9863-0ae307977a66"
+nsi_description = "Testing slice"
+
+instantiation_data = {
+        "nsiName": nsi_name,
+        "nstId": nst_id,
+        "vimAccountId": vim_account_id,
+        "nsiDescription": nsi_description
+}
+
+payload = json.dumps(instantiation_data)
+
+instantiation = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(instantiation.text)
