@@ -95,7 +95,8 @@ c_nst["netslice-subnet"].append(pr_csd["netslice-subnet"])
 
 
 # Add the corresponding Connection Points
-
+mgmt_slice_network = None   # attache mgmt network in vim network mgmt for slicing
+data_slice_network = None   # attache data network in vim network data for slicing
 mgmt_flag = 0
 data_flag = 0
 for vld in c_nst["netslice-vld"]:
@@ -103,11 +104,13 @@ for vld in c_nst["netslice-vld"]:
     if "mgmt-network" in vld and vld["mgmt-network"]:
         vld["nss-connection-point-ref"].append(pr_csd["mgmt-connector"])
         mgmt_flag = 1
+        mgmt_slice_network = vld["name"]
 
     # Add data csc interface
     if "mgmt-network" not in vld or not vld["mgmt-network"]:
         vld["nss-connection-point-ref"].append(pr_csd["data-connector"])
         data_flag = 1
+        data_slice_network = vld["name"]
 
     if mgmt_flag and data_flag:
         break
@@ -157,11 +160,28 @@ nst_id = str(_id)
 vim_account_id = "6dc88ac7-1790-4fce-9863-0ae307977a66"
 nsi_description = "Testing slice"
 
+# add network config
+if mgmt_slice_network or data_slice_network:
+    vld_config = [
+            {
+                "name": str(mgmt_slice_network),
+                "vim-network-name": "slicing_mgmt"
+            },
+            {
+                "name": str(data_slice_network),
+                "vim-network-name": "slicing_consumer_data"
+            }
+        ]
+else:
+    vld_config = []
+
+
 instantiation_data = {
         "nsiName": nsi_name,
         "nstId": nst_id,
         "vimAccountId": vim_account_id,
-        "nsiDescription": nsi_description
+        "nsiDescription": nsi_description,
+        "netslice-vld": vld_config
 }
 
 payload = json.dumps(instantiation_data)
