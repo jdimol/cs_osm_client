@@ -120,7 +120,7 @@ temp = [c_nst]
 c_nst = temp
 c_nst = {"nst": c_nst}
 
-#print(json.dumps(c_nst, indent=2))
+# print(json.dumps(c_nst, indent=2))
 yaml_cnst = yaml.dump(c_nst, allow_unicode=True)
 # print(yaml_cnst)
 

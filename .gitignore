@@ -1,4 +1,5 @@
 venv/
+provider_templates/
 .env
 .idea/
 *.DS_Store
