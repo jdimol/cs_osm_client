@@ -37,8 +37,8 @@ session_id = response_data["id"]
 
 # Cookie
 cookie = 'session_id=' + str(session_id)
-# print(cookie)
 
+# Update headers
 headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -59,6 +59,7 @@ ns_templates = ns_templates.json()
 
 c_nst = None
 # Search nst c_nst
+# In the templates search for the corresponding 'id' (as a string)
 for nst in ns_templates:
 
     if nst["id"] == c_nst_id:
@@ -69,7 +70,7 @@ for nst in ns_templates:
 if not c_nst:
     print("This NST does not exist!")
 
-# Get NST
+# Get NST | Search by _id value
 _id = c_nst["_id"]
 headers = {
     'Content-Type': 'application/json',
@@ -83,8 +84,6 @@ nst = yaml.load(nst_req.text, Loader=yaml.SafeLoader)
 
 
 # Provider's NST
-
-
 
 # Define a python dictionary with the provider's nst data
 services = nst["nst"][0]["netslice-subnet"]     # List of services
@@ -116,7 +115,6 @@ for serv in services:
 
         prov_service = {"netslice-subnet": serv, "mgmt-connector": mgmt_connector, "data-connector": data_connector}
         prov_services.append(prov_service)
-
 
 payload = json.dumps(prov_services, indent=2)
 print(payload)
