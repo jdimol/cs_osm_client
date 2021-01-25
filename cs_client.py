@@ -4,8 +4,11 @@ import requests
 import json
 import decouple as dc
 import yaml
-
+import time
 # OSM base url
+
+
+start_time = time.time()
 
 base_url = dc.config("BASE_URL")
 
@@ -175,7 +178,6 @@ if mgmt_slice_network or data_slice_network:
 else:
     vld_config = []
 
-
 instantiation_data = {
         "nsiName": nsi_name,
         "nstId": nst_id,
@@ -188,3 +190,6 @@ payload = json.dumps(instantiation_data)
 
 instantiation = requests.request("POST", url, headers=headers, data=payload, verify=False)
 print(instantiation.text)
+
+print("exec time: ", time.time() - start_time)
+

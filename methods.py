@@ -6,6 +6,11 @@ import requests
 import yaml
 import json
 import sys
+import time
+
+
+# measure time
+start_time = time.time()
 
 
 # Add Services from Provider's NetSlice Template
@@ -118,3 +123,5 @@ for serv in services:
 
 payload = json.dumps(prov_services, indent=2)
 print(payload)
+
+print("exec time: ", time.time() - start_time)
