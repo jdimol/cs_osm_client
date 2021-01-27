@@ -94,11 +94,15 @@ def get_nst_descriptor(nst_id):
     #
     nst = get_nst(nst_id)
 
+    # Define headers
     headers = make_headers('yaml')
     url = base_url + '/nst/v1/netslice_templates/' + str(nst["_id"]) + '/nst'
 
+    # Create the request
     nst_req = requests.request("GET", url, headers=headers, verify=False)
     nst_json = yaml.load(nst_req.text, Loader=yaml.SafeLoader)
+
+    # Parse descriptor info in a dictionary
     nst_descriptor = nst_json["nst"][0]
 
     return nst_descriptor
@@ -121,7 +125,9 @@ def create_prov_service_record(p_nst_id, shared_service_id):
     prov_services = extract_shared_services(services, vlds)
 
     # find the demanded service
-    p_service = list(filter(lambda service: service["netslice-subnet"]["id"] == shared_service_id, prov_services))
+    p_service = list(filter(lambda service: \
+                            service["netslice-subnet"]["id"] == shared_service_id,
+                            prov_services))
 
     return p_service[0]
 
@@ -156,10 +162,24 @@ def add_shared_service(p_service, c_nst_id):
     c_nst["netslice-subnet"].append(p_service["netslice-subnet"])
 
     # Add the corresponding Connection Points
-    mgmt_slice_network = None  # attache mgmt network in vim network mgmt for slicing
-    data_slice_network = None  # attache data network in vim network data for slicing
+    """ 
+        -----------------------------------------------------
+        Mgmt and data slice networks definition is optional.
+        It depends on the VIM configuration for Network Slicing
+        Comment the  corresponding lines to disable specific 
+        network attachments with vim-networks.
+        
+        1) mgmt_slice_network = None  
+        2) data_slice_network = None  
+        3) vld_config 
+        -----------------------------------------------------
+    """
+    mgmt_slice_network = None  # attache mgmt network in vim network
+    data_slice_network = None  # attache data network in vim network
+
     mgmt_flag = 0
     data_flag = 0
+
     vld_config = []
 
     # Configure connection points for each vld
