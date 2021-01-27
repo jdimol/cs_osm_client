@@ -5,11 +5,11 @@ import json
 import decouple as dc
 import yaml
 import time
-# OSM base url
 
 
 start_time = time.time()
 
+# OSM base url
 base_url = dc.config("BASE_URL")
 
 # Authentication
