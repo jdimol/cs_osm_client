@@ -5,27 +5,12 @@ import decouple as dc
 import requests
 import yaml
 import json
+
 # import sys
 # import time
 
 # Define Base url
 base_url = dc.config("BASE_URL")
-
-
-# Headers
-def make_headers(accept_type):
-    #
-    accept_object = {
-        'json': 'application/json',
-        'yaml': 'text/plain'
-    }
-
-    headers = {
-        'Content-Type': 'application/json',
-        'Accept': accept_object[accept_type],
-        'Authorization': get_api_key()
-    }
-    return headers
 
 
 #
@@ -52,7 +37,12 @@ def get_api_key():
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
-    response = requests.request("POST", url, headers=headers, data=auth_payload, verify=False)
+    response = requests.request(
+        "POST",
+        url, headers=headers,
+        data=auth_payload,
+        verify=False
+    )
 
     response_data = response.json()
     session_id = response_data["id"]
@@ -61,22 +51,45 @@ def get_api_key():
 
 
 #
-# Get on-boarded NSTs
-def get_nsts():
+# Headers
+def make_headers(accept_type, token):
     #
+    accept_object = {
+        'json': 'application/json',
+        'yaml': 'text/plain'
+    }
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': accept_object[accept_type],
+        'Authorization': token
+    }
+    return headers
+
+
+#
+# Get on-boarded NSTs
+def get_nsts(token):
+    #
+
     url = base_url + "/nst/v1/netslice_templates"
-    headers = make_headers('json')
-    ns_templates = requests.request("GET", url, headers=headers, verify=False)
+    headers = make_headers('json', token)
+    ns_templates = requests.request(
+        "GET", url,
+        headers=headers,
+        verify=False
+    )
     ns_templates = ns_templates.json()
 
     return ns_templates
 
 
+#
 # Get NST descriptor in json (Request from OSM)
-def get_nst(nst_id):
+def get_nst(nst_id, token):
     #
     nst = None
-    nsts = get_nsts()
+    nsts = get_nsts(token)
     for t in nsts:
 
         if t["id"] == nst_id:
@@ -90,16 +103,21 @@ def get_nst(nst_id):
 
 #
 # Returns the Descriptor of a nst, in JSON format
-def get_nst_descriptor(nst_id):
+def get_nst_descriptor(nst_id, token):
     #
-    nst = get_nst(nst_id)
+    nst = get_nst(nst_id, token)
 
     # Define headers
-    headers = make_headers('yaml')
-    url = base_url + '/nst/v1/netslice_templates/' + str(nst["_id"]) + '/nst'
+    headers = make_headers('yaml', token)
+    url = base_url + "/nst/v1/netslice_templates/" + str(nst["_id"]) + "/nst"
 
     # Create the request
-    nst_req = requests.request("GET", url, headers=headers, verify=False)
+    nst_req = requests.request(
+        "GET",
+        url,
+        headers=headers,
+        verify=False
+    )
     nst_json = yaml.load(nst_req.text, Loader=yaml.SafeLoader)
 
     # Parse descriptor info in a dictionary
@@ -110,11 +128,11 @@ def get_nst_descriptor(nst_id):
 
 #
 # Create provided service record for data store in JSON format
-def create_prov_service_record(p_nst_id, shared_service_id):
+def create_prov_service_record(p_nst_id, shared_service_id, token):
     # TODO: Adding multiple services from various providers
 
     # Get the p_nst descriptor
-    p_nstd = get_nst_descriptor(p_nst_id)
+    p_nstd = get_nst_descriptor(p_nst_id, token)
 
     # Define a python dictionary with the provider's nst data
     services = p_nstd["netslice-subnet"]  # List of services
@@ -125,9 +143,12 @@ def create_prov_service_record(p_nst_id, shared_service_id):
     prov_services = extract_shared_services(services, vlds)
 
     # find the demanded service
-    p_service = list(filter(lambda service: \
-                            service["netslice-subnet"]["id"] == shared_service_id,
-                            prov_services))
+    p_service = list(filter(
+        lambda service:
+        service["netslice-subnet"]["id"] == shared_service_id,
+        prov_services
+        )
+    )
 
     return p_service[0]
 
@@ -149,14 +170,32 @@ def nst_yaml(c_nst):
     return yaml_cnst
 
 
+"""
+TODO: Create instantiation parameters object for consumer slice
+      Based on instantiation parameters of provider's slice
+      1) vim-network-name for mgmt and data network
+      2) network connectivity establishment for slice-vlds
+         using vim-networks configuration.
+      3) Access for consumer in specific VNFs 
+"""
+
+
+# # Define Instantiation Parameters
+# def instantiation_config():
+#     #
+#     inst_parameters = {}
+#
+#     return inst_parameters
+
+
 #
 # Update nst descriptor with a shared service
 # Define Management and Data network for configuration
-def add_shared_service(p_service, c_nst_id):
+def add_shared_service(p_service, c_nst_id, token):
     # TODO: Adding multiple services from various providers
 
     # Get consumer's nst descriptor
-    c_nst = get_nst_descriptor(c_nst_id)
+    c_nst = get_nst_descriptor(c_nst_id, token)
 
     # Adding a netslice subnet into the descriptor
     c_nst["netslice-subnet"].append(p_service["netslice-subnet"])
@@ -248,7 +287,6 @@ def extract_shared_services(services, vlds):
                 if mgmt_flag and data_flag:
                     break
             if data_connector and mgmt_connector:
-
                 prov_service = {"netslice-subnet": serv,
                                 "data-connector": data_connector,
                                 "mgmt-connector": mgmt_connector
@@ -261,21 +299,23 @@ def extract_shared_services(services, vlds):
 # /------------------------ / testing code /------------------------ /
 #
 #
-# print(create_prov_service_record('cosmos_slice_nstd', 'tensorflow_big'))
+
 
 # basic input
-# c_nst_id = 'slice1_nstd'
-# p_nst_id = 'cosmos_slice_nstd'
-# provided_service = 'tensorflow_big'
-#
-# # retrieve data
-# pr_service = create_prov_service_record(p_nst_id, provided_service)
-#
-#
-# # update c_nstd for shared slice
-# c2_nst, vld_conf = add_shared_service(pr_service, c_nst_id)
-#
-# c_nst_to_yaml = nst_yaml(c2_nst)
-# print(c_nst_to_yaml)
+consumer_nst_id = 'slice1_nstd'
+pr_nst_id = 'cosmos_slice_nstd'
+provided_service = 'tensorflow_big'
+
+key = get_api_key()
+
+# retrieve data
+pr_service = create_prov_service_record(pr_nst_id, provided_service, key)
+
+
+# update c_nstd for shared slice
+c2_nst, vld_conf = add_shared_service(pr_service, consumer_nst_id, key)
+
+c_nst_to_yaml = nst_yaml(c2_nst)
+print(c_nst_to_yaml)
 
 # /------------------------ / testing code /------------------------ /
