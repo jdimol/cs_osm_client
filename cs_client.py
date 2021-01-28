@@ -18,6 +18,7 @@ pr_nst_id = 'cosmos_slice_nstd'
 provided_service = 'tensorflow_big'
 
 
+
 # Authentication
 token = csm.get_api_key()
 
@@ -29,6 +30,7 @@ c_nst, vld_config, _id = csm.add_shared_service(pr_service, consumer_nst_id, tok
 
 # Descriptor to YAML format
 c_nst = csm.nst_yaml(c_nst)
+print(c_nst)
 
 print("Instantiating NSI... \n")
 

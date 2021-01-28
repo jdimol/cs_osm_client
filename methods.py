@@ -300,8 +300,6 @@ def extract_shared_services(services, vlds):
 # /------------------------ / testing code /------------------------ /
 #
 #
-
-
 # # basic input
 # consumer_nst_id = 'slice1_nstd'
 # pr_nst_id = 'cosmos_slice_nstd'
