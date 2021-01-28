@@ -109,7 +109,8 @@ def get_nst_descriptor(nst_id, token):
 
     # Define headers
     headers = make_headers('yaml', token)
-    url = base_url + "/nst/v1/netslice_templates/" + str(nst["_id"]) + "/nst"
+    _id = nst["_id"]
+    url = base_url + "/nst/v1/netslice_templates/" + str(_id) + "/nst"
 
     # Create the request
     nst_req = requests.request(
@@ -123,7 +124,7 @@ def get_nst_descriptor(nst_id, token):
     # Parse descriptor info in a dictionary
     nst_descriptor = nst_json["nst"][0]
 
-    return nst_descriptor
+    return nst_descriptor, _id
 
 
 #
@@ -132,7 +133,7 @@ def create_prov_service_record(p_nst_id, shared_service_id, token):
     # TODO: Adding multiple services from various providers
 
     # Get the p_nst descriptor
-    p_nstd = get_nst_descriptor(p_nst_id, token)
+    p_nstd, p_id = get_nst_descriptor(p_nst_id, token)
 
     # Define a python dictionary with the provider's nst data
     services = p_nstd["netslice-subnet"]  # List of services
@@ -195,7 +196,7 @@ def add_shared_service(p_service, c_nst_id, token):
     # TODO: Adding multiple services from various providers
 
     # Get consumer's nst descriptor
-    c_nst = get_nst_descriptor(c_nst_id, token)
+    c_nst, _id = get_nst_descriptor(c_nst_id, token)
 
     # Adding a netslice subnet into the descriptor
     c_nst["netslice-subnet"].append(p_service["netslice-subnet"])
@@ -251,7 +252,7 @@ def add_shared_service(p_service, c_nst_id, token):
             }
         ]
 
-    return c_nst, vld_config
+    return c_nst, vld_config, _id
 
 
 #
@@ -301,21 +302,21 @@ def extract_shared_services(services, vlds):
 #
 
 
-# basic input
-consumer_nst_id = 'slice1_nstd'
-pr_nst_id = 'cosmos_slice_nstd'
-provided_service = 'tensorflow_big'
-
-key = get_api_key()
-
-# retrieve data
-pr_service = create_prov_service_record(pr_nst_id, provided_service, key)
-
-
-# update c_nstd for shared slice
-c2_nst, vld_conf = add_shared_service(pr_service, consumer_nst_id, key)
-
-c_nst_to_yaml = nst_yaml(c2_nst)
-print(c_nst_to_yaml)
-
-# /------------------------ / testing code /------------------------ /
+# # basic input
+# consumer_nst_id = 'slice1_nstd'
+# pr_nst_id = 'cosmos_slice_nstd'
+# provided_service = 'tensorflow_big'
+#
+# key = get_api_key()
+#
+# # retrieve data
+# pr_service = create_prov_service_record(pr_nst_id, provided_service, key)
+#
+#
+# # update c_nstd for shared slice
+# c2_nst, vld_conf, _id = add_shared_service(pr_service, consumer_nst_id, key)
+#
+# c_nst_to_yaml = nst_yaml(c2_nst)
+# print(c_nst_to_yaml)
+#
+# # /------------------------ / testing code /------------------------ /
