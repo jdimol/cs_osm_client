@@ -171,16 +171,13 @@ def nst_yaml(c_nst):
     return yaml_cnst
 
 
-"""
-TODO: Create instantiation parameters object for consumer slice
-      Based on instantiation parameters of provider's slice
-      1) vim-network-name for mgmt and data network
-      2) network connectivity establishment for slice-vlds
-         using vim-networks configuration.
-      3) Access for consumer in specific VNFs 
-"""
-
-
+# TODO: Create instantiation parameters object for consumer slice
+#      Based on instantiation parameters of provider's slice
+#      1) vim-network-name for mgmt and data network
+#      2) network connectivity establishment for slice-vlds
+#          using vim-networks configuration.
+#      3) Access for consumer in specific VNFs
+#
 # # Define Instantiation Parameters
 # def instantiation_config():
 #     #

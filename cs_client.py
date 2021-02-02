@@ -18,7 +18,6 @@ pr_nst_id = 'cosmos_slice_nstd'
 provided_service = 'tensorflow_big'
 
 
-
 # Authentication
 token = csm.get_api_key()
 
@@ -40,13 +39,12 @@ print("Instantiating NSI... \n")
 url = base_url + "/nsilcm/v1/netslice_instances_content"
 headers = csm.make_headers('json', token)
 
-# Mandatory Instantiation parameters
 
-''' TODO Read the below variables as input '''
-''' 1) nsi_name: user's input
-    2) nst_id: it is defined above
-    3) vim_account_id: translated from vim_name into id
-'''
+# Mandatory Instantiation parameters
+#  TODO Read the below variables as input
+#     1) nsi_name: user's input
+#     2) nst_id: it is defined above
+#     3) vim_account_id: translated from vim_name into id
 
 nsi_name = "test_consumer_slice"    # str()
 nst_id = str(_id)
