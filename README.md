@@ -25,9 +25,7 @@ virtualenv ../path/to/venv
 Activate the venv and install dependancies:
 ```bash
 source /path/to/venv/bin/activate
-```
-open the pop_selection folder:
-```bash
+
 pip install -r requirements.txt
 ```
 
