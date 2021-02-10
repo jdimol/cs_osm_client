@@ -68,6 +68,43 @@ def make_headers(accept_type, token):
 
 
 #
+# Get Net Service (deployed)
+def get_net_subnet(token, ns_id):
+    #
+    url = base_url + '/nslcm/v1/ns_instances_content/' + str(ns_id)
+    headers = make_headers('json', token)
+    slice_subnet = requests.request(
+        "GET", url,
+        headers=headers,
+        verify=False
+    )
+    if slice_subnet.status_code != 200:
+        slice_subnet = 'Subnet does not found!'
+    else:
+        slice_subnet = slice_subnet.json()
+    return slice_subnet
+
+
+#
+# Get Net Slice Instances
+def get_ns_instance(token, ns_id):
+    #
+    url = base_url + '/nsilcm/v1/netslice_instances_content/'+str(ns_id)
+    headers = make_headers('json', token)
+    ns_instance = requests.request(
+        "GET", url,
+        headers=headers,
+        verify=False
+    )
+    if ns_instance.status_code != 200:
+        ns_instance = 'Slice Instance does not found!'
+    else:
+        ns_instance = ns_instance.json()
+
+    return ns_instance
+
+
+#
 # Get on-boarded NSTs
 def get_nsts(token):
     #
