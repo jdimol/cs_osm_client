@@ -1,3 +1,5 @@
+templates/
+client_project/
 tests.py
 venv/
 provider_templates/

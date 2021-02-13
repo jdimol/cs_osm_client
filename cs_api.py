@@ -1,5 +1,6 @@
 #
 from flask import Flask, request
+from flask import Blueprint
 from flask_restx import Api, fields
 import os
 
@@ -7,11 +8,16 @@ import os
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+main = Blueprint('main', __name__)
+
 # api
-api = Api(app, version='1.0', title="Cross Service Orchestration API")
-client_api = api.namespace('client_api',
-                           description="Cross Service Orchestration API"
-                           )
+#api = Api(app, version='1.0', title="Cross Service Orchestration API")
+#client_api = api.namespace('client_api',
+#                           description="Cross Service Orchestration API"
+#                           )
+
+#
+
 # allow both GET and POST requests
 @app.route('/form-example', methods=['GET', 'POST'])
 def form_example():
@@ -30,6 +36,7 @@ def form_example():
                <div><label>Requested Service ID: <input type="text" name="prov_id"></label></div>
                <input type="submit" value="Submit">
            </form>'''
+
 
 if __name__ == '__main__':
     # run app in debug mode on port 5000
